@@ -254,6 +254,60 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   ];
 
+  // Add PolioWeb project details to the projects array
+  projects.push({
+    id: "polioweb",
+    title: "PolioWeb — GIS Dashboard",
+    description: "A real-time geospatial platform for planning, monitoring, and optimizing polio vaccination campaigns across Punjab.",
+    details: {
+      overview: "PolioWeb is an end-to-end GIS-based monitoring and analytics system developed to digitize the polio vaccination workflow in Punjab. It provides real-time visibility of field operations, vaccination coverage, team performance, route execution, and campaign progress at the Union Council (UC), Tehsil, District, and Provincial levels.",
+      purpose: [
+        "Vaccination campaign monitoring (daily, real-time updates)",
+        "Field team management (team routes, status, coverage)",
+        "Identification of coverage gaps (missed areas, low-reach regions)",
+        "Analysis & reporting (auto reports for district & provincial authorities)",
+        "Route digitization for standardized planning and auditing"
+      ],
+      technologies: {
+        frontend: ["Angular (Component-based UI)", "PrimeNG (Tables, charts, layouts)", "Leaflet (GIS mapping framework)"],
+        backend: ["Flask (REST APIs for maps, analytics, GPS tracks)", "Python GIS stack: GeoPandas, GDAL, Shapely", "PostgreSQL + PostGIS (Spatial database and geoprocessing)"],
+        tools: ["GeoServer for map publishing", "QGIS for route digitization and preprocessing", "GPS Device / Mobile App feeds for field-team tracking"]
+      },
+      features: [
+        "Digitized Vaccination Routes",
+        "Real-Time GPS Tracking",
+        "Multi-layer Interactive GIS Map",
+        "Heatmaps for Coverage Gaps",
+        "Automated Reporting System",
+        "Dashboard Analytics",
+        "Role-Based Access"
+      ],
+      achievements: [
+        "Reduced manual reporting by 90%",
+        "Cut campaign response time significantly",
+        "Enabled data-driven reallocation of teams & vaccine supplies",
+        "Provided accurate, real-time visibility of field operations",
+        "Standardized polio route planning across multiple districts",
+        "Improved identification of repeatedly missed areas",
+        "Supported government & WHO auditors for verification and analysis"
+      ],
+      contributions: [
+        "Digitization of Vaccination Routes",
+        "GPS Integration",
+        "Backend & API Development (Flask)",
+        "Angular + Leaflet Frontend Development",
+        "Training & Documentation"
+      ],
+      impact: [
+        "Improved operational efficiency",
+        "Enhanced accountability through GPS and routes",
+        "Simplified auditing and field verification",
+        "Allowed leadership to make quick and accurate policy decisions",
+        "Provided real-time insight into vaccination gaps, reducing risk of outbreaks"
+      ]
+    }
+  });
+
   // Render projects as a black & white clickable list
   const projectList = document.getElementById('project-list');
   const projectDetails = document.getElementById('project-details');
