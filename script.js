@@ -160,6 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
       details: `
         <h6 class="fw-bold">Overview</h6>
         <p>The Flood Detection & Mapping project is an advanced GeoAI-driven disaster management system designed to detect flooded areas, map the spatial extent of floods, and predict high-risk zones before emergencies occur. It integrates satellite imagery, hydrological indicators, weather parameters, and AI models to support government agencies, emergency teams, and disaster relief organizations.</p>
+        <div class="my-4 text-center">
+          <img src="flood.jpg" alt="Flood Detection Visual" style="max-width: 420px; width: 100%; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.13);">
+          <div style="font-size:0.97rem;color:#555;margin-top:0.5rem;">Flood Detection & Mapping – AI-powered visual</div>
+        </div>
         <h6 class="fw-bold mt-4">Objective</h6>
         <ul>
           <li>Detect flooded regions from satellite images</li>
@@ -210,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <h6 class="fw-bold mt-4">Impact</h6>
         <ul>
           <li>Faster emergency response</li>
-          <li>Early prediction for at-risk communities</li>
+            <img src="flood-segmentation.jpg" alt="Flood Segmentation Visual" style="max-width: 420px; width: 100%; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.13);">
           <li>Data-driven disaster management</li>
           <li>Accurate mapping for rescue planning</li>
           <li>Strengthened preparedness for climate-related disasters</li>
