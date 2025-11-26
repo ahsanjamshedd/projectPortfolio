@@ -308,31 +308,93 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Render projects as a black & white clickable list
-  const projectList = document.getElementById('project-list');
-  const projectDetails = document.getElementById('project-details');
-  if (projectList && projectDetails) {
+  // Render projects as a grid of cards (3 per row)
+  const projectGrid = document.getElementById('project-grid');
+  if (projectGrid) {
+    projectGrid.innerHTML = '';
     projects.forEach((p, idx) => {
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      li.textContent = p.name;
-      li.setAttribute('data-project', idx);
-      projectList.appendChild(li);
+      // Choose an icon based on project name (simple emoji fallback)
+      let icon = '💡';
+      if (/groundwater|irrigation/i.test(p.name)) icon = '💧';
+      else if (/flood/i.test(p.name)) icon = '🌊';
+      else if (/polio/i.test(p.name)) icon = '🗺️';
+      else if (/chatbot|nlp/i.test(p.name)) icon = '💬';
+
+      // Tech badges (show up to 3 main techs)
+      let techs = [];
+      if (p.details && typeof p.details === 'object' && p.details.technologies) {
+        techs = [
+          ...(p.details.technologies.frontend || []),
+          ...(p.details.technologies.backend || []),
+          ...(p.details.technologies.tools || [])
+        ].slice(0,3);
+      } else if (p.details && typeof p.details === 'string') {
+        // Try to extract from details string
+        const match = p.details.match(/Technologies:\s*([\w, .\-\/\(\)]+)/i);
+        if (match) techs = match[1].split(',').map(t => t.trim()).slice(0,3);
+      }
+      if (p.intro && techs.length < 1) {
+        // Fallback: look for techs in intro
+        const match = p.intro.match(/(Angular|Python|Flask|Leaflet|GIS|Dash|PrimeNG|PostGIS|NLP|spaCy|NLTK)/gi);
+        if (match) techs = match.slice(0,3);
+      }
+
+      // Card column
+      const col = document.createElement('div');
+      col.className = 'col-lg-4 col-md-6 col-12';
+      // Card
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.innerHTML = `
+        <div class="project-icon">${icon}</div>
+        <div class="project-title">${p.name}</div>
+        <div class="project-tagline">${p.intro || ''}</div>
+        <div class="project-badges">
+          ${techs.map(t => `<span class="badge-tech">${t}</span>`).join('')}
+        </div>
+        <button class="view-project-btn" data-project="${idx}">View Project &gt;</button>
+      `;
+      col.appendChild(card);
+      projectGrid.appendChild(col);
     });
 
-    projectList.addEventListener('click', function(e) {
-      const li = e.target.closest('.list-group-item');
-      if (!li) return;
-      // Remove active from all
-      projectList.querySelectorAll('.list-group-item').forEach(item => item.classList.remove('active'));
-      li.classList.add('active');
-      const idx = li.getAttribute('data-project');
-      const project = projects[idx];
-      projectDetails.innerHTML = `<h5>${project.name}</h5><div class='mb-3'>${project.intro}</div>${project.details}`;
-      projectDetails.style.display = 'block';
-      // Scroll to details on mobile
-      if (window.innerWidth < 992) {
-        projectDetails.scrollIntoView({behavior:'smooth'});
+    // Modal for project details
+    let modal = document.getElementById('project-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'project-modal';
+      modal.style.display = 'none';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(0,0,0,0.32)';
+      modal.style.zIndex = '9999';
+      modal.innerHTML = `
+        <div style="max-width:700px;margin:5vh auto;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:2.2rem 2.2rem 1.5rem 2.2rem;position:relative;">
+          <button id="close-modal-btn" style="position:absolute;top:18px;right:18px;font-size:1.5rem;background:none;border:none;color:#222;cursor:pointer;">&times;</button>
+          <div id="modal-content"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    const modalContent = document.getElementById('modal-content');
+    projectGrid.addEventListener('click', function(e) {
+      const btn = e.target.closest('.view-project-btn');
+      if (!btn) return;
+      const idx = btn.getAttribute('data-project');
+      const p = projects[idx];
+      if (modalContent) {
+        modalContent.innerHTML = `<h3 style='margin-bottom:0.7rem;'>${p.name}</h3><div class='mb-3'>${p.intro || ''}</div>${typeof p.details === 'string' ? p.details : ''}`;
+      }
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    });
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal || e.target.id === 'close-modal-btn') {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
       }
     });
   }
