@@ -341,18 +341,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Card column
       const col = document.createElement('div');
-      col.className = 'col-lg-4 col-md-6 col-12';
+      // 4 columns on extra-large, 3 on large, 2 on medium, 1 on small
+      col.className = 'col-xl-3 col-lg-4 col-md-6 col-12';
       // Card
       const card = document.createElement('div');
       card.className = 'project-card';
       card.innerHTML = `
-        <div class="project-icon">${icon}</div>
-        <div class="project-title">${p.name}</div>
-        <div class="project-tagline">${p.intro || ''}</div>
-        <div class="project-badges">
-          ${techs.map(t => `<span class="badge-tech">${t}</span>`).join('')}
+        <div class="card-top">
+          <div class="project-icon-blob">${icon}</div>
+          <div class="project-head">
+            <div class="project-title">${p.name}</div>
+            <div class="project-tagline">${p.intro ? p.intro.slice(0,160) + (p.intro.length>160? '…':'') : ''}</div>
+          </div>
         </div>
-        <button class="view-project-btn" data-project="${idx}">View Project &gt;</button>
+        <div class="project-badges">
+          ${techs.map(t => `<span class="badge-tech">${t.replace(/\(.*\)/,'').slice(0,28)}</span>`).join('')}
+        </div>
+        <div class="card-footer"><button class="view-project-btn" data-project="${idx}">View Project</button></div>
       `;
       col.appendChild(card);
       projectGrid.appendChild(col);
@@ -372,14 +377,42 @@ document.addEventListener('DOMContentLoaded', function () {
       modal.style.background = 'rgba(0,0,0,0.32)';
       modal.style.zIndex = '9999';
       modal.innerHTML = `
-        <div style="max-width:700px;margin:5vh auto;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:2.2rem 2.2rem 1.5rem 2.2rem;position:relative;">
-          <button id="close-modal-btn" style="position:absolute;top:18px;right:18px;font-size:1.5rem;background:none;border:none;color:#222;cursor:pointer;">&times;</button>
-          <div id="modal-content"></div>
+        <div style="max-width:820px;margin:5vh auto;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.12);position:relative;">
+          <button id="close-modal-btn" style="position:absolute;top:14px;right:14px;font-size:1.6rem;background:none;border:none;color:#222;cursor:pointer;">&times;</button>
+          <div id="modal-content" style="max-height:78vh;overflow-y:auto;padding:2.2rem; -webkit-overflow-scrolling:touch;"></div>
         </div>
       `;
       document.body.appendChild(modal);
     }
     const modalContent = document.getElementById('modal-content');
+    // Create a lightweight image lightbox (fullscreen preview) if it doesn't exist
+    let lightbox = document.getElementById('image-lightbox');
+    if (!lightbox) {
+      lightbox = document.createElement('div');
+      lightbox.id = 'image-lightbox';
+      lightbox.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:10000;backdrop-filter:blur(4px);';
+      lightbox.innerHTML = `
+        <div style="position:relative;max-width:95vw;max-height:95vh;display:flex;align-items:center;justify-content:center;padding:1rem;">
+          <img id="lightbox-img" src="" alt="preview" style="max-width:95vw;max-height:95vh;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,0.5);" />
+          <button id="lightbox-close" style="position:absolute;top:8px;right:8px;border:none;background:rgba(255,255,255,0.12);color:#fff;font-size:1.6rem;border-radius:50%;width:40px;height:40px;cursor:pointer;">&times;</button>
+        </div>
+      `;
+      document.body.appendChild(lightbox);
+
+      // Close handlers for lightbox
+      lightbox.addEventListener('click', (ev) => {
+        if (ev.target.id === 'image-lightbox' || ev.target.id === 'lightbox-close') {
+          lightbox.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape' && lightbox.style.display === 'flex') {
+          lightbox.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+    }
     projectGrid.addEventListener('click', function(e) {
       const btn = e.target.closest('.view-project-btn');
       if (!btn) return;
@@ -387,6 +420,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const p = projects[idx];
       if (modalContent) {
         modalContent.innerHTML = `<h3 style='margin-bottom:0.7rem;'>${p.name}</h3><div class='mb-3'>${p.intro || ''}</div>${typeof p.details === 'string' ? p.details : ''}`;
+        // Enable image click -> fullscreen (lightbox)
+        modalContent.querySelectorAll('img').forEach(img => {
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', (ie) => {
+            const lbImg = document.getElementById('lightbox-img');
+            lbImg.src = img.src;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+          });
+        });
       }
       modal.style.display = 'block';
       document.body.style.overflow = 'hidden';
